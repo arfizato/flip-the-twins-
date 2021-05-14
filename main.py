@@ -2,34 +2,33 @@ import tkinter as tk
 import random as rand
 from tkinter.constants import DISABLED
 from PIL import Image, ImageTk
-from tkinter import messagebox
+from tkinter import Button, messagebox
+import tkinter.font as font   
 
 
 
 def buttonClick( l,c,x,button):
     button.grid_forget()
-    global firstOrSecond, firstImage, firstL, firstC, firstButton, livesLeft,keepPlaying, picsFlipped
+    global firstOrSecond, firstImage, firstL, firstC, firstButton, livesLeft,keepPlaying, picsFlipped, lifeImage,livesList
     if firstOrSecond==1 :
         firstImage= mat[l-1][c-1]
         firstL=l
         firstC=c
         firstButton= button
-        #print("first")
     else:
-        #print("second")
         if mat[l-1][c-1]!= firstImage : 
-            livesLeft -= 1
-            #print("Be Careful! you only have ",livesLeft," lives left.")
-            #print("mistake!",l==firstL," ",c==firstC)
+            livesLeft -= 1     
+
+            lifeImage=livesList[livesLeft]    
+            root.lifeImage= ImageTk.PhotoImage(Image.open(lifeImage))
+            livesButton.configure(image=root.lifeImage)
+
             firstButton.grid(row=firstL,column=firstC,pady=2)
             button.grid(row=l,column=c,pady=2)
             if livesLeft==0:
                 box= messagebox.askquestion("Game Over!","You Have No Lives Yet\nWould you like to play again?",icon="question")
                 if box!="yes":
                     keepPlaying=False
-                    print(keepPlaying,"eezeeeebi")
-                else:
-                    print("ezebi")
                 root.destroy()
         else:
             picsFlipped+=1
@@ -37,23 +36,15 @@ def buttonClick( l,c,x,button):
                 box= messagebox.askquestion("You Won!","You have Flipped all the images\nWould you like to play again?",icon="question")
                 if box!="yes":
                     keepPlaying=False
-                    print(keepPlaying,"eezeeeebi")
-                else:
-                    print("ezebi")
-                root.destroy()
+                root.destroy()        
 
-
-        
-
-    #print(firstOrSecond)    
-    #firstOrsecond= 2 if (firstOrSecond == 1) else 1
     if firstOrSecond ==1:
         firstOrSecond=2
     else:
         firstOrSecond=1
-    #print("a",firstOrSecond)
 
 def coverButtons():
+
     button1 = tk.Button(root,text='',width=100,height=80,bg='#353535',bd=0,image=root.image00, command= lambda: buttonClick(1,1,1,button1))
     button1.grid(row=1,column=1,padx=2,pady=2)
 
@@ -81,6 +72,8 @@ def coverButtons():
 def changeLayout():
     global t1
     welcomeMessage.destroy()
+
+    
 
     #image11= tk.PhotoImage(file=imageList[1]).subsample(8,8)
     button11 = tk.Button(root,text='',width=100,height=80,bg='#353535',bd=0,image= root.image11,state= DISABLED,)# command= lambda: buttonClick(root.image11,1,1))
@@ -112,7 +105,9 @@ def changeLayout():
 
     #image24= tk.PhotoImage(file=imageList[4]).subsample(8,8)
     button24 = tk.Button(root,text='',width=100,height=80,bg='#353535',bd=0,image= root.image24,state= DISABLED,)# command= lambda: buttonClick(root.image24,2,4))
-    button24.grid(row=2,column=4,padx=2,pady=2)    
+    button24.grid(row=2,column=4,padx=2,pady=2)   
+
+    livesButton.grid(row=0,column=1,pady=2, columnspan=4)
     
     root.after(2000, coverButtons)
 
@@ -133,6 +128,7 @@ keepPlaying=True
 while keepPlaying==True:    
     firstImage="" ; firstL=0 ; firstC=0 ; livesLeft=3; picsFlipped=0; firstOrSecond=1
     imageList=["images/empty.png","images/axe.png","images/flower.png","images/pistol.png","images/shovel.png"]
+    livesList=["images/0lives.png","images/1lives.png","images/2lives.png","images/3lives.png"]
     mat=[[""]*4,[""]*4]
     for a in range(0,4):
         while True :
@@ -148,7 +144,6 @@ while keepPlaying==True:
             if mat[l][c]=="":
                 break
         mat[l][c]=imageList[a+1]
-    #print(mat[0],"\n",mat[1])
 
         
 
@@ -158,13 +153,16 @@ while keepPlaying==True:
     root.configure(bg="#272727")
     root.geometry("+500+300")
     root.protocol('WM_DELETE_WINDOW', OnClose)
-
+    
 
     image00=imageList[0]
     root.image00= ImageTk.PhotoImage(Image.open(image00))
     firstButton = tk.Button(root,text='',width=100,height=80,bg='#353535',bd=0,image=root.image00, command= lambda: buttonClick(1,1,1,button1))
 
 
+    lifeImage=livesList[3]
+    root.lifeImage= ImageTk.PhotoImage(Image.open(lifeImage))
+    
     image11=mat[0][0]
     root.image11= ImageTk.PhotoImage(Image.open(image11))
 
@@ -187,13 +185,30 @@ while keepPlaying==True:
     root.image23= ImageTk.PhotoImage(Image.open(image23))
 
     image24=mat[1][3]
-    root.image24= ImageTk.PhotoImage(Image.open(image24))
+    root.image24= ImageTk.PhotoImage(Image.open(image24))     
 
-    welcomeMessage= tk.Button(root,text="Once you click me you'll have\n5 seconds to remember the positions\n of each pair of photos",padx=120,pady=30,bg="#353535",bd=0,fg="#fff",command=lambda: changeLayout())
-    welcomeMessage.grid(columnspan= 4,row= 0, column=1, pady=2)   
+    livesFont= font.Font(family="source sans pro", size=11, slant="italic")
+    livesButton = tk.Button(root,compound="right", text="\t\t\t\t\t    Lives Left:", width=420,height=20,bg="#353535", bd=0, image=root.lifeImage, state=DISABLED,  )#"\t\t\t\t\t\t\t     "
+    livesButton["font"]=livesFont
 
-    root.mainloop()
-    """
+
+    firstFont = font.Font(family="source sans pro",size=15, )# Reem kufi, Modern M, Raleway MS, Gothic, Microsoft uighur,
+
+    welcomeMessage= tk.Button(root,text="ONCE YOU CLICK ME YOU WILL HAVE\n5 SECONDS TO REMEMBER THE POSITIONS\nOF EACH PAIR OF PHOTOS",width=45,height=5,bg="#353535",bd=0,fg="#BAF9FF",command=lambda: changeLayout())#Once you click me you'll have\n5 seconds to remember the positions\n of each pair of photos
+    #welcomeMessage= tk.Button(root,text="Once you click me you'll have\n5 seconds to remember the positions\n of each pair of photos",padx=120,pady=30,bg="#353535",bd=0,fg="#fff",command=lambda: changeLayout())
+    welcomeMessage.grid(columnspan= 4,row= 0, column=1, pady=2)  
+    welcomeMessage["font"]=firstFont
+
+    root.mainloop() 
+"""Coded By 
+                 █████╗ ██████╗ ███████╗██╗███████╗ █████╗ ████████╗ ██████╗ 
+                ██╔══██╗██╔══██╗██╔════╝██║╚══███╔╝██╔══██╗╚══██╔══╝██╔═══██╗
+                ███████║██████╔╝█████╗  ██║  ███╔╝ ███████║   ██║   ██║   ██║
+                ██╔══██║██╔══██╗██╔══╝  ██║ ███╔╝  ██╔══██║   ██║   ██║   ██║
+                ██║  ██║██║  ██║██║     ██║███████╗██║  ██║   ██║   ╚██████╔╝
+                ╚═╝  ╚═╝╚═╝  ╚═╝╚═╝     ╚═╝╚══════╝╚═╝  ╚═╝   ╚═╝    ╚═════╝ 
+"""
+"""
     print("\n\n\n\n\n")
     x=0
     for a in range(1,3):
@@ -204,12 +219,4 @@ while keepPlaying==True:
             #print("root.image"+str(a)+str(b)+"= ImageTk.PhotoImage(Image.open(image"+str(a)+str(b)+") ).subsample(8,8)")
             #print("button"+str(x)+" = tk.Button(root,text='',width=100,height=80,bg='#353535',bd=0,image=root.image00, command= lambda: buttonClick("+str(a)+","+str(b)+","+str(x)+",button"+str(x)+"))")
             #print("button"+str(x)+".grid(row="+str(a)+",column="+str(b)+",padx=2,pady=2)\n")
-    """
-"""Coded By 
-                 █████╗ ██████╗ ███████╗██╗███████╗ █████╗ ████████╗ ██████╗ 
-                ██╔══██╗██╔══██╗██╔════╝██║╚══███╔╝██╔══██╗╚══██╔══╝██╔═══██╗
-                ███████║██████╔╝█████╗  ██║  ███╔╝ ███████║   ██║   ██║   ██║
-                ██╔══██║██╔══██╗██╔══╝  ██║ ███╔╝  ██╔══██║   ██║   ██║   ██║
-                ██║  ██║██║  ██║██║     ██║███████╗██║  ██║   ██║   ╚██████╔╝
-                ╚═╝  ╚═╝╚═╝  ╚═╝╚═╝     ╚═╝╚══════╝╚═╝  ╚═╝   ╚═╝    ╚═════╝ 
 """
