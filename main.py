@@ -71,7 +71,10 @@ def coverButtons():
 
 def changeLayout():
     global t1
-    welcomeMessage.destroy()
+    try: 
+        welcomeMessage.destroy()
+    except:
+        pass
 
     
 
@@ -124,8 +127,8 @@ def OnClose():
     ██      ██ ██   ██ ██ ██   ████     ██       ██████  ██   ████  ██████    ██    ██  ██████  ██   ████                                                                                                       
 
     """   
-keepPlaying=True
-while keepPlaying==True:    
+keepPlaying=True ;playedOnce=0
+while keepPlaying==True:   
     firstImage="" ; firstL=0 ; firstC=0 ; livesLeft=3; picsFlipped=0; firstOrSecond=1
     imageList=["images/empty.png","images/axe.png","images/flower.png","images/pistol.png","images/shovel.png"]
     livesList=["images/0lives.png","images/1lives.png","images/2lives.png","images/3lives.png"]
@@ -157,7 +160,7 @@ while keepPlaying==True:
 
     image00=imageList[0]
     root.image00= ImageTk.PhotoImage(Image.open(image00))
-    firstButton = tk.Button(root,text='',width=100,height=80,bg='#353535',bd=0,image=root.image00, command= lambda: buttonClick(1,1,1,button1))
+    firstButton = tk.Button(root,text='',width=100,height=80,bg='#353535',bd=0,image=root.image00, command= lambda: buttonClick(1,1,1,firstButton))
 
 
     lifeImage=livesList[3]
@@ -193,11 +196,14 @@ while keepPlaying==True:
 
 
     firstFont = font.Font(family="source sans pro",size=15, )# Reem kufi, Modern M, Raleway MS, Gothic, Microsoft uighur,
-
-    welcomeMessage= tk.Button(root,text="ONCE YOU CLICK ME YOU WILL HAVE\n5 SECONDS TO REMEMBER THE POSITIONS\nOF EACH PAIR OF PHOTOS",width=45,height=5,bg="#353535",bd=0,fg="#BAF9FF",command=lambda: changeLayout())#Once you click me you'll have\n5 seconds to remember the positions\n of each pair of photos
-    #welcomeMessage= tk.Button(root,text="Once you click me you'll have\n5 seconds to remember the positions\n of each pair of photos",padx=120,pady=30,bg="#353535",bd=0,fg="#fff",command=lambda: changeLayout())
-    welcomeMessage.grid(columnspan= 4,row= 0, column=1, pady=2)  
-    welcomeMessage["font"]=firstFont
+    if playedOnce==0:
+        welcomeMessage= tk.Button(root,text="ONCE YOU CLICK ME YOU WILL HAVE\n5 SECONDS TO REMEMBER THE POSITIONS\nOF EACH PAIR OF PHOTOS",width=45,height=5,bg="#353535",bd=0,fg="#BAF9FF",command=lambda: changeLayout())#Once you click me you'll have\n5 seconds to remember the positions\n of each pair of photos
+        #welcomeMessage= tk.Button(root,text="Once you click me you'll have\n5 seconds to remember the positions\n of each pair of photos",padx=120,pady=30,bg="#353535",bd=0,fg="#fff",command=lambda: changeLayout())
+        welcomeMessage.grid(columnspan= 4,row= 0, column=1, pady=2)  
+        welcomeMessage["font"]=firstFont
+        playedOnce=1 
+    else:
+        changeLayout()
 
     root.mainloop() 
 """Coded By 
